@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Roulette - Premium Social Game</title>
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #DAA520;
+            --black: #0a0a0a;
+            --dark-bg: #1a1a2e;
+            --white: #FFFFFF;
+            --premio-light: #4CAF50;
+            --premio-dark: #2E7D32;
+            --penitencia-light: #FF6B6B;
+            --penitencia-dark: #C92A2A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold) 0%, #FFE55C 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            opacity: 0.9;
+        }
+
+        /* SETUP SCREEN */
+        #setup-screen {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(40, 20, 60, 0.95) 100%);
+            border: 2px solid var(--gold-dark);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        #setup-screen h2 {
+            font-size: 2rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .setup-description {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--gold-dark);
+            padding: 16px 20px;
+            color: var(--white);
+            font-size: 1rem;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            color: #000;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .players-label {
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .players-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold-dark);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 100px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+        }
+
+        .player-badge {
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            color: #000;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-remove {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .player-remove:hover {
+            transform: scale(1.3);
+        }
+
+        #start-game-btn {
+            width: 100%;
+            font-size: 1.3rem;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            background: linear-gradient(135deg, var(--premio-dark) 0%, var(--premio-light) 100%);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* GAME SCREEN */
+        #game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .turn-display {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            text-align: center;
+        }
+
+        .turn-display .player-name {
+            font-size: 2rem;
+            color: #FFE55C;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* ROULETTE */
+        .roulette-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .roulette-wrapper {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gold) 0%, #FFE55C 100%);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 30;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.8));
+            border: 3px solid var(--gold-dark);
+        }
+
+        .roulette-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 15px solid var(--gold-dark);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.3), inset 0 0 40px rgba(0, 0, 0, 0.7);
+            transition: transform 5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 35% 35%, var(--gold), var(--gold-dark));
+            border-radius: 50%;
+            z-index: 20;
+            border: 6px solid #000;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            left: 50%;
+            top: 50%;
+            transform-origin: 0% 0%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 30px;
+            border-left: 2px solid rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .segment.premio {
+            background: linear-gradient(to bottom, rgba(76, 175, 80, 0.35), rgba(76, 175, 80, 0.15));
+        }
+
+        .segment.penitencia {
+            background: linear-gradient(to bottom, rgba(255, 107, 107, 0.35), rgba(255, 107, 107, 0.15));
+        }
+
+        .segment-text {
+            width: 180px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            line-height: 1.3;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            transform: rotate(9deg);
+            pointer-events: none;
+        }
+
+        .segment.premio .segment-text {
+            color: var(--premio-light);
+        }
+
+        .segment.penitencia .segment-text {
+            color: var(--penitencia-light);
+        }
+
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #spin-btn {
+            font-size: 1.4rem;
+            padding: 20px 60px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            min-width: 250px;
+        }
+
+        #reset-btn {
+            font-size: 1.1rem;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            color: var(--white);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(40, 20, 60, 0.98) 100%);
+            border: 3px solid var(--gold);
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 100px rgba(255, 215, 0, 0.4), 0 20px 60px rgba(0, 0, 0, 0.9);
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-player {
+            font-size: 1.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .modal-type {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .modal-type.premio {
+            color: var(--premio-light);
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .modal-type.penitencia {
+            color: var(--penitencia-light);
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .modal-result {
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 40px;
+            line-height: 1.6;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid var(--gold);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #close-modal-btn {
+            font-size: 1.2rem;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .roulette-wrapper { width: 450px; height: 450px; }
+            .segment-text { width: 140px; font-size: 0.8rem; }
+            #setup-screen { padding: 30px; }
+            .modal-content { padding: 40px; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .roulette-wrapper { width: 320px; height: 320px; }
+            .segment-text { width: 100px; font-size: 0.7rem; }
+            #setup-screen { padding: 20px; }
+            .modal-content { padding: 30px; }
+            .modal-result { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1>Golden Roulette</h1>
+            <p class="subtitle">Premium Social Experience</p>
+        </header>
+
+        <!-- SETUP SCREEN -->
+        <div id="setup-screen">
+            <h2>🎮 Configurar Jugadores</h2>
+            <p class="setup-description">Añade los nombres de los participantes (Máximo 20 jugadores)</p>
+
+            <div class="input-section">
+                <input type="text" id="player-input" placeholder="Nombre del jugador..." maxlength="25">
+                <button id="add-player-btn">Añadir</button>
+            </div>
+
+            <div class="players-label">Jugadores en la partida:</div>
+            <div class="players-container" id="players-list"></div>
+
+            <button id="start-game-btn">🎡 Empezar Juego</button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen">
+            <div class="turn-display">
+                Turno de: <div class="player-name" id="current-player">-</div>
+            </div>
+
+            <div class="roulette-section">
+                <div class="roulette-wrapper">
+                    <div class="pointer"></div>
+                    <div class="roulette-wheel" id="roulette-wheel">
+                        <div class="wheel-center"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="spin-btn">🎡 Girar Ruleta</button>
+                <button id="reset-btn">🔄 Reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal-content">
+            <div class="modal-player" id="modal-player">JUGADOR</div>
+            <div class="modal-type" id="modal-type">PREMIO</div>
+            <div class="modal-result" id="modal-result">Resultado</div>
+            <button id="next-turn-btn">➡️ Siguiente Turno</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ DATA ============
+        const PREMIOS = [
+            "1€ en efectivo",
+            "2€ en efectivo",
+            "3€ en efectivo",
+            "4€ en efectivo",
+            "5€ en efectivo",
+            "Entrada al Cine",
+            "Entrada al Teatro",
+            "Día de playa",
+            "Picnic en el parque",
+            "Cena social"
+        ];
+
+        const PENITENCIAS = [
+            "Salir en pelotas a la terraza y mostrar los senos o pelotas",
+            "Mostrarle una zona atrevida de tu cuerpo a la persona de la derecha",
+            "Mostrarle una zona atrevida de tu cuerpo a la persona de la izquierda",
+            "Darle un beso en la boca a la persona de la derecha",
+            "Tomarte 5 segundos de ron",
+            "Tomarte 3 segundos de tequila",
+            "Darle una prenda íntima que tengas puesta a la persona de la izquierda",
+            "Decirle al oído algo erótico que le quieras hacer a la persona de la izquierda",
+            "Hacerle sexo oral al que tienes dos puestos a la derecha",
+            "Lamerle el cuello al de tu izquierda"
+        ];
+
+        // ============ STATE ============
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isSpinning = false;
+        let currentRotation = 0;
+        let wheelSegments = [];
+
+        // ============ DOM ============
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const playerInput = document.getElementById('player-input');
+        const addPlayerBtn = document.getElementById('add-player-btn');
+        const playersList = document.getElementById('players-list');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const rouletteWheel = document.getElementById('roulette-wheel');
+        const spinBtn = document.getElementById('spin-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const currentPlayerDisplay = document.getElementById('current-player');
+        const resultModal = document.getElementById('result-modal');
+        const modalPlayer = document.getElementById('modal-player');
+        const modalType = document.getElementById('modal-type');
+        const modalResult = document.getElementById('modal-result');
+        const nextTurnBtn = document.getElementById('next-turn-btn');
+
+        // ============ INITIALIZE ROULETTE ============
+        function initializeRoulette() {
+            rouletteWheel.innerHTML = '<div class="wheel-center"></div>';
+            wheelSegments = [];
+
+            // Crear 20 segmentos alternando premios y penitencias
+            for (let i = 0; i < 10; i++) {
+                wheelSegments.push({
+                    text: PREMIOS[i],
+                    type: 'premio',
+                    index: i
+                });
+                wheelSegments.push({
+                    text: PENITENCIAS[i],
+                    type: 'penitencia',
+                    index: i
+                });
+            }
+
+            // Crear elementos DOM para cada segmento
+            wheelSegments.forEach((segment, index) => {
+                const segmentEl = document.createElement('div');
+                segmentEl.className = `segment ${segment.type}`;
+                const angle = index * 18; // 360 / 20 = 18 grados por segmento
+                segmentEl.style.transform = `rotate(${angle}deg)`;
+                segmentEl.innerHTML = `<div class="segment-text">${segment.text}</div>`;
+                segmentEl.dataset.index = index;
+                rouletteWheel.appendChild(segmentEl);
+            });
+        }
+
+        // ============ PLAYER MANAGEMENT ============
+        function addPlayer() {
+            const name = playerInput.value.trim();
+            if (!name) return;
+            if (players.length >= 20) {
+                alert('Máximo 20 jugadores permitidos');
+                return;
+            }
+            players.push(name);
+            playerInput.value = '';
+            renderPlayers();
+            if (players.length >= 2) startGameBtn.style.display = 'block';
+        }
+
+        function renderPlayers() {
+            playersList.innerHTML = '';
+            players.forEach((name, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'player-badge';
+                badge.innerHTML = `
+                    <span>${index + 1}. ${name}</span>
+                    <span class="player-remove" onclick="removePlayer(${index})">×</span>
+                `;
+                playersList.appendChild(badge);
+            });
+        }
+
+        window.removePlayer = function(index) {
+            players.splice(index, 1);
+            renderPlayers();
+            if (players.length < 2) startGameBtn.style.display = 'none';
+        };
+
+        // ============ GAME LOGIC ============
+        function startGame() {
+            if (players.length < 2) {
+                alert('Se necesitan al menos 2 jugadores para jugar');
+                return;
+            }
+            // Mezclar jugadores aleatoriamente
+            players = players.sort(() => Math.random() - 0.5);
+            currentPlayerIndex = 0;
+            updateTurnDisplay();
+            setupScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            initializeRoulette();
+        }
+
+        function updateTurnDisplay() {
+            currentPlayerDisplay.textContent = players[currentPlayerIndex];
+        }
+
+        function spin() {
+            if (isSpinning || players.length === 0) return;
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+
+            // Rotación aleatoria: mínimo 5 vueltas completas + ángulo aleatorio
+            const randomAngle = Math.floor(Math.random() * 360);
+            const totalRotation = 1800 + randomAngle; // 5 * 360 + random
+            currentRotation += totalRotation;
+
+            rouletteWheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            // Esperar a que termine la animación
+            setTimeout(() => {
+                // Calcular qué segmento está en la posición del puntero (arriba)
+                const normalizedRotation = currentRotation % 360;
+                // El puntero está en la parte superior (0 grados)
+                // Necesitamos encontrar qué segmento está ahí
+                const winningAngle = (360 - normalizedRotation) % 360;
+                const segmentIndex = Math.floor(winningAngle / 18) % 20;
+
+                const winner = wheelSegments[segmentIndex];
+                showResult(winner);
+
+                isSpinning = false;
+                spinBtn.disabled = false;
+            }, 5000);
+        }
+
+        function showResult(segment) {
+            modalPlayer.textContent = players[currentPlayerIndex];
+            modalType.textContent = segment.type === 'premio' ? '🎁 PREMIO' : '😈 PENITENCIA';
+            modalType.className = `modal-type ${segment.type}`;
+            modalResult.textContent = segment.text;
+            resultModal.style.display = 'flex';
+        }
+
+        function nextTurn() {
+            resultModal.style.display = 'none';
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateTurnDisplay();
+        }
+
+        function resetGame() {
+            if (confirm('¿Seguro que quieres reiniciar la partida?')) {
+                location.reload();
+            }
+        }
+
+        // ============ EVENT LISTENERS ============
+        addPlayerBtn.addEventListener('click', addPlayer);
+        playerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addPlayer();
+        });
+        startGameBtn.addEventListener('click', startGame);
+        spinBtn.addEventListener('click', spin);
+        nextTurnBtn.addEventListener('click', nextTurn);
+        resetBtn.addEventListener('click', resetGame);
+    </script>
+
+</body>
+</html>
